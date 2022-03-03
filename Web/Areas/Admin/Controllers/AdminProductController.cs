@@ -2,6 +2,7 @@
 using Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Services;
 
@@ -42,7 +43,8 @@ namespace Web.Areas.Admin.Controllers
         public IActionResult Create(Product product,IFormFile[] PictureUrlss,string? removePictureIds,int? thumbnailPictureId)
         {
             ViewBag.CategoryList=_categoryManager.GetAll();
-            if(ModelState.IsValid)
+            JsonResult data = new(new { });
+            if (ModelState.IsValid)
             {
                 product.ProductPictures = new List<ProductPicture>();
 
@@ -73,10 +75,13 @@ namespace Web.Areas.Admin.Controllers
                 product.CoverPhotoId = product.ProductPictures != null ? product.ProductPictures.First().PictureId : null;
 
                 _productManager.Add(product);
-                return RedirectToAction("Index");
-                
+                //return RedirectToAction("Index");
+                ViewData["CategoryId"] = new SelectList(_categoryManager.GetAll(), "Id", "CategoryName", product.CategoryId);
+                data.Value = new { Success = true };
+                return data;
+
             }
-            return View(product);
+            return View(data);
         }
         public IActionResult Edit(int? id)
         {

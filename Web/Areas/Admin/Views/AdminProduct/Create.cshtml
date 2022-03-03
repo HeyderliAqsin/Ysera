@@ -142,8 +142,15 @@
         dataType:'json',
         processData:false,
         contentType:false,
-        success:function(){
-
+        success:function(data   ){
+            if(data.success){
+                Swal.fire(
+                    'Good job',
+                    'You clicked the button',
+                    'success'
+                )
+                setTimeout(()=>window.location.href="/Admin/AdminProduct/Index",200)
+            }
         }
     })
 
