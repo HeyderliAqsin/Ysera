@@ -1,0 +1,184 @@
+﻿@using Entities
+@model Entities.Product
+
+@{
+    ViewData["Title"] = "Edit";
+}
+<style>
+    .label-photo{
+        background:goldenrod;
+        padding:10px 20px;
+        color:#fff;
+        margin:10px 0;
+        cursor:pointer;
+    }
+    a{
+        text-decoration:none;
+        margin:15px 0;
+    }
+
+</style>
+
+<h1>Edit</h1>
+
+<h4>Product</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form id="EditForm" asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger">
+                <input type="hidden" asp-for="ProductPictures"/>
+                <input type="hidden" asp-for="ModifiedOn"/>
+                @{
+                    string [] arr = Model.ProductPictures != null ? Model.ProductPictures.Select(c => c.PictureId.ToString()).ToArray(): null;
+                    string picIds=@String.Join("-", arr);
+                }
+                <input type="hidden" name="oldPicture" value="@picIds"/>
+
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="control-label"></label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsSlider" value="true" /> @Html.DisplayNameFor(model => model.IsSlider)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price" class="control-label"></label>
+                <input asp-for="Price" class="form-control" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsFeatured" /> @Html.DisplayNameFor(model => model.IsFeatured)
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="Discount" class="control-label"></label>
+                <input asp-for="Discount" class="form-control" />
+                <span asp-validation-for="Discount" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsComplect" /> @Html.DisplayNameFor(model => model.IsComplect)
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Rating" class="control-label"></label>
+                <input asp-for="Rating" class="form-control" />
+                <span asp-validation-for="Rating" class="text-danger"></span>
+            </div>
+              <div class="form-group">
+                <label for="pictureInput" class="label-photo control-label">Select Photo <span>(0)</span></label>
+                <input class="d-none" id="pictureInput" type="file" multiple name="PictureUrls" />
+                <div id="pictureList" class="d-flex flex-wrap"> </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Category" class="control-label"></label>
+                <select class="form-control" asp-for="CategoryId">
+                    <option value="0" disabled selected>--Selected Category--</option>
+                    @foreach (var cat in ViewBag.CategoryList as List<Category>)
+                    {
+                        <option value="@cat.Id">@cat.Name</option>
+                    }
+                </select>
+                <span asp-validation-for="Category" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-warning" />
+                <a class="ml-2 btn btn-primary" asp-action="Index">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="hiddenPicture col-lg-3 col-sm-6 d-none">
+    <img class="img-fluid img-thumbnail" src="/uploads/17c3f199-75e8-4af6-92dc-c764787f3ca9product-jpeg-500x500.jpg" />
+    <input class="thumbradio" type="radio" name="thumbnailPictureId" /> Thumbnail
+    <br/>
+    <button class="btn btn-danger btn-remove" picture-id="" myFile="" type="submit" onclick="removePicture(this)">Remove Picture</button>
+</div>
+
+
+@section Scripts{
+<script>
+    let pictureList=[]
+    $("#pictureInput").change(function(){
+    pictureList.push(...this.files);
+    const pictures=[...this.files]
+    for(let i=0;i<pictures.length;i++){
+        let pic=pictures[i]
+           const pictureItem=$(".hiddenPicture").clone();
+            pictureItem.removeClass("hiddenPicture")
+            pictureItem.addClass("itemPicture")
+
+            const reader=new FileReader();
+            reader.onload=function(res){
+           pictureItem.find("img").attr("src",res.target.result)
+    }
+    reader.readAsDataURL(pic)
+
+    pictureItem.find(".btn-remove").attr("myFile",pic.name)
+    pictureItem.find(".thumbradio").val(Number($("#picCount").val())+i)
+    pictureItem.removeClass("d-none")
+    $("#pictureList").append(pictureItem)
+    }
+    $(".label-photo span").text("("+pictureList.length+")")
+
+    })
+      $("#EditForm").submit(function(e){
+          e.preventDefault();
+          var formData=new FormData(this)
+          for(let pic of pictureList){
+          formData.append("PictureUrlss",pic)
+          }
+    $.ajax({
+        url:"/Admin/AdminProduct/Edit",
+        method:"POST",
+        data:formData,
+        dataType:'json',
+        processData:false,
+        contentType:false,
+        success:function(){
+
+        }
+    })
+
+    })
+    let removePictureIdList=[]
+
+    function removePicture(element){
+        let picId=$(element).attr("picture-id")
+        if(typeof picId !=="undefined"){
+            removePictureIdList.push(picId);
+            $("#removePictureIds").val(removePictureIdList.join("-"))
+        }
+       
+
+        let pictureName=$(element).attr("myFile")
+        pictureList=pictureList.filter(c=>c.name!==pictureName)
+        $(".label-photo span").text("("+pictureList.length+")")
+        $("#pictureInput").val("")
+        $(element).parent(".itemPicture").remove()
+
+        let count=0;
+        $(".itemPicture .thumbradio").each((i,element)=>{
+            $(element).val(count)   
+            count++;
+            console.log(element)
+
+
+        })
+    }
+
+</script>
+}
+

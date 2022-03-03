@@ -1,0 +1,132 @@
+﻿@model CartVM
+@{
+    ViewData["title"] = "Shopping Cart";
+}
+<div class="site-content">
+    <main class="site-main  main-container no-sidebar">
+        <div class="container">
+            <div class="breadcrumb-trail breadcrumbs">
+                <ul class="trail-items breadcrumb">
+                    <li class="trail-item trail-begin">
+                        <a href="#">
+                            <span>
+                                Home
+                            </span>
+                        </a>
+                    </li>
+                    <li class="trail-item trail-end active">
+                        <span>
+                            Shopping Cart
+                        </span>
+                    </li>
+                </ul>
+            </div>
+            <div class="row">
+                <div class="main-content-cart main-content col-sm-12">
+                    <h3 class="custom_blog_title">
+                        Shopping Cart
+                    </h3>
+                    <div class="page-main-content">
+                        <div class="shoppingcart-content" id="my-cart" >
+                                        
+                            @if (Model != null && Model.Products !=null && Model.ProductIds !=null && Model.ProductIds.Count>0) 
+                            {
+                                <form  class="cart-form">
+                                    <table class="shop_table">
+                                        <thead>
+                                            <tr>
+                                                <th class="product-remove"></th>
+                                                <th class="product-thumbnail"></th>
+                                                <th class="product-name"></th>
+                                                <th class="product-price"></th>
+                                                <th class="product-quantity"></th>
+                                                <th class="product-subtotal"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                decimal totalPrice = 0;
+                                            }
+                                            @foreach (var item in Model.Products)
+                                            {
+                                                var quantity = Model.ProductIds.Where(x => x == item.Id).Count();
+                                              @*  totalPrice += item.Price * quantity;*@
+                                                <tr class="cart_item">
+                                                    <td class="product-remove" >
+                                                        <a href="" class="remove" pro-id=@item.Id></a>
+                                                    </td>
+                                                    <td class="product-thumbnail">
+                                                        <a href="#">
+                                                            <img src="@item.ProductPictures" alt="img"
+                                                         class="attachment-shop_thumbnail size-shop_thumbnail wp-post-image">
+                                                        </a>
+                                                    </td>
+                                                    <td class="product-name" data-title="Product">
+                                                        <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Id" class="title">@item.Name</a>
+                                                        <span class="attributes-select attributes-color">Black,</span>
+                                                        <span class="attributes-select attributes-size">XXL</span>
+                                                    </td>
+                                                    <td class="product-quantity" data-title="Quantity">
+                                                        <div class="quantity" >
+                                                            <div class="control" pro-id="@item.Id" pro-price="@item.Price">
+                                                                <a class="btn-number qtyminus quantity-minus"  href="#">-</a>
+                                                                <input type="text" min="1" data-step="1" data-min="1" value="@quantity" title="Qty"
+                                                               class="input-qty qty" size="4">
+                                                                <a href="#" class="btn-number qtyplus quantity-plus">+</a>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td class="product-price" data-title="Price">
+                                                        <span class="woocommerce-Price-amount amount">
+                                                            <span class="woocommerce-Price-currencySymbol">
+                                                                $
+                                                            </span>
+                                                            @(item.Price*quantity)
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                                 <tr>
+                                                 <td class="actions">
+                                                    <div class="coupon">
+                                                        <label class="coupon_code">Coupon Code:</label>
+                                                        <input type="text" class="input-text" placeholder="Promotion code here">
+                                                        <a href="#" class="button"></a>
+                                                    </div>
+                                                    <div class="order-total">
+                                                        <span class="title">
+                                                            Total Price:
+                                                        </span>
+                                                        <span class="total-price">
+                                                            $ @Model.Products.Sum(x=>x.Price*Model.ProductIds.Where(id=>id==x.Id).Count())  
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </form>
+                            }
+                            else
+                            {
+                                <p class="alert alert-danger">No products in the Cart</p>
+                            }
+                            <div class="control-cart">
+                               <a asp-controller="home">
+                                <button  class="button btn-continue-shopping">
+                                    Continue Shopping
+                                </button>
+                                </a> 
+                                <a asp-controller="Order" asp-action="CheckOut">
+                                <button  class="button btn-cart-to-checkout">
+                                    Checkout
+                                </button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

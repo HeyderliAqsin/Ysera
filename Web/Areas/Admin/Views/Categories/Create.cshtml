@@ -1,0 +1,64 @@
+﻿@model Entities.Category
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Category</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+                <div class="form-group">
+                <label asp-for="IconUrl" class="control-label"></label>
+                <input asp-for="IconUrl" class="form-control" />
+                <span asp-validation-for="IconUrl" class="text-danger"></span>
+                <div class="categoryIcon">
+                    <i class="fas fa-apple-alt"></i>
+                   <i class="far fa-at"></i>
+                    <i class="fab fa-asymmetrik"></i>
+                    <i class="fab fa-angellist"></i>
+                    <i class="fas fa-balance-scale"></i>
+                    <i class="fas fa-bell"></i>
+                    <i class="fab fa-bluetooth"></i>
+                    <i class="far fa-bullhorn"></i>
+                    <i class="fas fa-cart-arrow-down"></i>
+                    <i class="fab fa-cc-amazon-pay"></i>
+                    <i class="fas fa-check-circle"></i>
+                    <i class="fas fa-city"></i>
+                </div>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsDeleted" /> @Html.DisplayNameFor(model => model.IsDeleted)
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-success" />
+                 <a class="ml-2 btn btn-primary" asp-action="Index">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script>
+        $(".categoryIcon i").click(function(){
+           const Iconclass= $(this).attr("class")
+           $("#IconUrl").val(Iconclass)
+        })
+
+
+    </script>
+
+}
+

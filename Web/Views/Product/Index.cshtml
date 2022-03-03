@@ -1,0 +1,20 @@
+﻿@model ProductIndexVM
+
+@{
+    ViewData["title"] = "Search results";
+}
+
+ <div class="container">
+<h3>Search results...</h3>
+<div class="row">
+@foreach (var item in Model.Products)
+{
+     <div class="col-lg-12">
+          <img class="img-fluid" src="@item.ProductPictures" />
+         <span>Product category:</span><h6>@item.Category.Name</h6>
+         <span>Product name:</span> <h6>@item.Name</h6>
+     </div>
+}
+</div>
+ </div>
+
