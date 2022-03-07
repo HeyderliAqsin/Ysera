@@ -17,7 +17,7 @@ namespace Web.Areas.Admin.Controllers
         private readonly ProductManager _productManager;
         private readonly CategoryManager _categoryManager;
         private readonly IWebHostEnvironment _webHostEnvironment;
-        private readonly PictureManager _pictureManager;    
+        private readonly PictureManager _pictureManager;
 
         public AdminProductController(JewelleryDbContext context, ProductManager productManager, IWebHostEnvironment webHostEnvironment, PictureManager pictureManager, CategoryManager categoryManager)
         {
@@ -40,48 +40,48 @@ namespace Web.Areas.Admin.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Product product,IFormFile[] PictureUrlss,string? removePictureIds,int? thumbnailPictureId)
+        public IActionResult Create(Product product, IFormFile[]? PictureUrlss, string? removePictureIds, int? thumbnailPictureId)
         {
-            ViewBag.CategoryList=_categoryManager.GetAll();
+            ViewBag.CategoryList = _categoryManager.GetAll();
             JsonResult data = new(new { });
             if (ModelState.IsValid)
             {
                 product.ProductPictures = new List<ProductPicture>();
+                if (PictureUrlss != null)
+                {
+                    foreach (var PhotoUrl in PictureUrlss)
+                    {
+                        string fileName = Guid.NewGuid() + PhotoUrl.FileName;
+                        var rootFile = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
+                        var photoLink = Path.Combine(rootFile, fileName);
+                        using FileStream fileStream = new(photoLink, FileMode.Create);
+                        PhotoUrl.CopyTo(fileStream);
 
-                foreach (var PhotoUrl in PictureUrlss)
-                {   
-                    string fileName = Guid.NewGuid() + PhotoUrl.FileName;
-                    var rootFile = Path.Combine(_webHostEnvironment.WebRootPath, "uploads");
-                    var photoLink = Path.Combine(rootFile, fileName);
-                    using FileStream fileStream = new(photoLink, FileMode.Create);
-                    PhotoUrl.CopyTo(fileStream);
+                        Picture newPicture = new() { Url = "/uploads/" + fileName };
+                        _pictureManager.AddPicture(newPicture);
+                        product.ProductPictures.Add(
+                            new ProductPicture()
+                            { PictureId = newPicture.Id, ProductId = product.Id });
 
-                    Picture newPicture = new() { Url = "/uploads/" + fileName };
-                    _pictureManager.AddPicture(newPicture);
 
-                    product.ProductPictures.Add(
-                        new ProductPicture() 
-                        { PictureId=newPicture.Id,ProductId=product.Id});
-
-                    //int picFirstId = product.ProductPictures.First().PictureId;
-                        product.CoverPhotoId=product.ProductPictures != null ?
-                        product.ProductPictures[thumbnailPictureId ?? 0].PictureId : null;
+                    }
+                    int picFirstId = product.ProductPictures.First().PictureId;
+                    product.CoverPhotoId = product.ProductPictures != null ?
+                    product.ProductPictures[thumbnailPictureId.HasValue ? thumbnailPictureId.Value : picFirstId].PictureId : null;
 
                     product.PublishDate = DateTime.Now;
                     _productManager.Add(product);
-                    return RedirectToAction(nameof(Index));
-                   
-                 }
-                product.CoverPhotoId = product.ProductPictures != null ? product.ProductPictures.First().PictureId : null;
 
-                _productManager.Add(product);
-                //return RedirectToAction("Index");
-                ViewData["CategoryId"] = new SelectList(_categoryManager.GetAll(), "Id", "CategoryName", product.CategoryId);
+
+                }
+
                 data.Value = new { Success = true };
                 return data;
 
             }
-            return View(data);
+            data.Value = new { Success = false };
+
+            return data;
         }
         public IActionResult Edit(int? id)
         {
@@ -95,8 +95,10 @@ namespace Web.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, Product product, IFormFile[] PictureUrlss,string oldPicture, string removePictureIds, int? thumbnailPictureId)
+        public IActionResult Edit(int id, Product product, IFormFile[] PictureUrlss, string? oldPicture, string? removePictureIds, int? thumbnailPictureId)
         {
+            ViewBag.CategoryList = _categoryManager.GetAll();
+            JsonResult data = new(new { });
 
             if (id != product.Id)
                 return NotFound();
@@ -104,22 +106,24 @@ namespace Web.Areas.Admin.Controllers
             {
                 try
                 {
-
-                    List<int> removePicIds = removePictureIds.Split("-")
+                    List<int> removePicIds = new List<int>();
+                    if (removePictureIds != null)
+                    {
+                        removePicIds = removePictureIds.Split("-")
                         .Select(c => int.Parse(c)).ToList();
+                        _pictureManager.RemovePicture(removePicIds);
+                        product.ProductPictures = new List<ProductPicture>();
+                        product.ProductPictures = product.ProductPictures.Where(c => !removePicIds.Contains(c.PictureId)).ToList();
 
-                    _pictureManager.RemovePicture(removePicIds);
+                    }
+
+
                     List<int> oldPictureIds = oldPicture.Split("-")
-                       .Select(c => int.Parse(c))
-                       .Where(c => !removePicIds.Contains(c))
-                       .ToList();
-
-                    product.ProductPictures = new List<ProductPicture>();
-                    product.ProductPictures = product.ProductPictures.Where(c => !removePicIds.Contains(c.PictureId)).ToList();
-
+                         .Select(c => int.Parse(c))
+                         .Where(c => !removePicIds.Contains(c))
+                         .ToList();
                     var oldPicturewithoutRemove = _pictureManager.GetProductIds(oldPictureIds);
-                    product.ProductPictures = oldPicturewithoutRemove.Count>0? oldPicturewithoutRemove: new List<ProductPicture>();
-
+                    product.ProductPictures = oldPicturewithoutRemove.Count > 0 ? oldPicturewithoutRemove : new List<ProductPicture>();
 
                     foreach (var PhotoUrl in PictureUrlss)
                     {
@@ -136,8 +140,8 @@ namespace Web.Areas.Admin.Controllers
                             new ProductPicture()
                             { PictureId = newPicture.Id, ProductId = product.Id });
 
-                        
                     }
+
                     int picFirstId = product.ProductPictures.First().PictureId;
 
                     product.CoverPhotoId = product.ProductPictures != null ?
@@ -161,12 +165,15 @@ namespace Web.Areas.Admin.Controllers
 
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                //return RedirectToAction(nameof(Index));
+                data.Value = new { Success = true };
+                return data;
 
             }
-            ViewBag.CategoryList = _categoryManager.GetAll();
-            return View(product);
-        
+            data.Value = new { Success = false };
+
+            return data;
+
         }
 
 
@@ -184,9 +191,9 @@ namespace Web.Areas.Admin.Controllers
         {
 
             if (id == null) return NotFound();
-            var selectedProduct=_productManager.GetbyId(id);
-            if(selectedProduct==null) return NotFound();
-           
+            var selectedProduct = _productManager.GetbyId(id);
+            if (selectedProduct == null) return NotFound();
+
             return View(selectedProduct);
         }
         [HttpPost, ActionName("Delete")]
@@ -194,11 +201,11 @@ namespace Web.Areas.Admin.Controllers
         public IActionResult Delete(int id)
         {
 
-            var selectedProduct = _productManager.GetbyId(id); 
+            var selectedProduct = _productManager.GetbyId(id);
             if (selectedProduct == null) return NotFound();
             _productManager.Delete(selectedProduct);
             return RedirectToAction("Index");
         }
-       
+
     }
 }

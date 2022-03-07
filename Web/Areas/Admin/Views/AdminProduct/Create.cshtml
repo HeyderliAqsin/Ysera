@@ -122,7 +122,7 @@
     reader.readAsDataURL(pic)
 
     pictureItem.find(".btn-remove").attr("myFile",pic.name)
-    pictureItem.find(".thumbradio").val(Number($("#picCount").val())+i)
+    pictureItem.find(".thumbradio").val(i)
     pictureItem.removeClass("d-none")
     $("#pictureList").append(pictureItem)
     }
@@ -155,28 +155,28 @@
     })
 
     })
-      let removePictureIdList=[]
+      //let removePictureIdList=[]
 
     function removePicture(element){
-        let picId=$(element).attr("picture-id")
-        if(typeof picId !=="undefined"){
-            removePictureIdList.push(picId);
-            $("#removePictureIds").val(removePictureIdList.join("-"))
-        }
-        let pictureName=$(element).attr("myFile")
-        pictureList=pictureList.filter(c=>c.name!==pictureName)
-        $(".label-photo span").text("("+pictureList.length+")")
-        $("#pictureInput").val("")
-        $(element).parent(".itemPicture").remove()
+        //let picId=$(element).attr("picture-id")
+        //if(typeof picId !=="undefined"){
+        //    removePictureIdList.push(picId);
+        //    $("#removePictureIds").val(removePictureIdList.join("-"))
+        //}
+        let picturename=$(element).attr("myfile")
+        picturelist=picturelist.filter(c=>c.name!==picturename)
+        $(".label-photo span").text("("+picturelist.length+")")
+        $("#pictureinput").val("")
+        $(element).parent(".itempicture").remove()
 
-         let count=0;
-        $(".itemPicture .thumbradio").each((i,element)=>{
-            $(element).val(count)   
-            count++;
-            console.log(element)
+        // let count=0;
+        //$(".itempicture .thumbradio").each((i,element)=>{
+        //    $(element).val(count)   
+        //    count++;
+        //    console.log(element)
 
 
-        })
+        
     }
 
 </script>
