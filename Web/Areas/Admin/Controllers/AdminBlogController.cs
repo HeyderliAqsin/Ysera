@@ -49,7 +49,7 @@ namespace Web.Areas.Admin.Controllers
         public IActionResult Create([Bind("Name,Description,BlogPhoto,PublishDate,BlogCategoryId,Id")] Blog blog, IFormFile BlogPhoto)
         {
 
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 if(BlogPhoto != null)
                 {

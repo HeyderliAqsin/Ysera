@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Entities;
-using Web.Data;
 using Services;
 
 namespace Web.Areas.Admin.Controllers
