@@ -97,7 +97,7 @@
 </div>
 
 <div class="hiddenPicture col-lg-3 col-sm-6 d-none">
-    <img class="img-fluid img-thumbnail" src="/uploads/17c3f199-75e8-4af6-92dc-c764787f3ca9product-jpeg-500x500.jpg" />
+    <img class="img-fluid img-thumbnail" src="" />
     <input class="thumbradio" type="radio" name="thumbnailPictureId" /> Thumbnail
     <br />
     <button class="btn btn-danger btn-remove" picture-id="" myFile="" type="submit" onclick="removePicture(this)">Remove Picture</button>
@@ -158,25 +158,13 @@
       //let removePictureIdList=[]
 
     function removePicture(element){
-        //let picId=$(element).attr("picture-id")
-        //if(typeof picId !=="undefined"){
-        //    removePictureIdList.push(picId);
-        //    $("#removePictureIds").val(removePictureIdList.join("-"))
-        //}
+  
         let picturename=$(element).attr("myfile")
         picturelist=picturelist.filter(c=>c.name!==picturename)
         $(".label-photo span").text("("+picturelist.length+")")
         $("#pictureinput").val("")
         $(element).parent(".itempicture").remove()
 
-        // let count=0;
-        //$(".itempicture .thumbradio").each((i,element)=>{
-        //    $(element).val(count)   
-        //    count++;
-        //    console.log(element)
-
-
-        
     }
 
 </script>

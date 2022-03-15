@@ -8,10 +8,13 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Entities;
 using Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
+
     public class BlogCategoriesController : Controller
     {
         private readonly BlogCategoryManager _blogCategoryManager;

@@ -62,6 +62,7 @@ namespace Web.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create([Bind("Name,IsDeleted,Id,IconUrl")] Category category)
         {
+
             if (ModelState.IsValid)
             {
                 _categoryManager.Add(category);
@@ -90,7 +91,7 @@ namespace Web.Areas.Admin.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("Name,IsDeleted,Id")] Category category)
+        public IActionResult Edit(int id, [Bind("Name,IsDeleted,Id,IconUrl")] Category category)
         {
             if (id != category.Id)
             {
