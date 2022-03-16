@@ -72,7 +72,8 @@ namespace Services
         }
         public List<Product?> GetbyIds(IEnumerable<int> ids)
         {
-            var selectedProducts = _context.Products.Where(p => ids.Contains(p.Id)).ToList();
+            var selectedProducts = _context.Products.Include(x=>x.ProductPictures).ThenInclude(x=>x.Picture)
+                .Where(p => ids.Contains(p.Id)).ToList();
             return selectedProducts;
         }
         public void Delete(Product product)

@@ -27,7 +27,6 @@ namespace Web.Controllers
                     vm.ProductIds = productIds;
                     vm.Products = productList;
 
-
                 }
             return View(vm);
         }

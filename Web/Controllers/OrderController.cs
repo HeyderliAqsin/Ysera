@@ -72,6 +72,7 @@ namespace Web.Controllers
                     Quantity = (ushort)productIds.Where(p => p == c.Id).Count(),
                     Id=newOrder.Id,
                     OrderPrice=c.Price,
+                   
                 }));
                 newOrder.TotalAmount = newOrder.OrderItems.Select(c => c.Quantity * c.OrderPrice).Sum();
 

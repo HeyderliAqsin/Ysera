@@ -49,16 +49,22 @@
                                             }
                                             @foreach (var item in Model.Products)
                                             {
+                                                string photoUrl = "/uploads/default-product.png";
+                                                if (item.ProductPictures != null)
+                                                {
+                                                 photoUrl = PictureHelpers.getCoverPhoto(item.CoverPhotoId,item.ProductPictures);
+                                                    
+                                                }
+
                                                 var quantity = Model.ProductIds.Where(x => x == item.Id).Count();
-                                              @*  totalPrice += item.Price * quantity;*@
+                                                @*  totalPrice += item.Price * quantity;*@
                                                 <tr class="cart_item">
                                                     <td class="product-remove" >
                                                         <a href="" class="remove" pro-id=@item.Id></a>
                                                     </td>
                                                     <td class="product-thumbnail">
                                                         <a href="#">
-                                                            <img src="@item.ProductPictures" alt="img"
-                                                         class="attachment-shop_thumbnail size-shop_thumbnail wp-post-image">
+                                                            <img src="@photoUrl" alt="img"/>
                                                         </a>
                                                     </td>
                                                     <td class="product-name" data-title="Product">
@@ -113,12 +119,12 @@
                             }
                             <div class="control-cart">
                                <a asp-controller="home">
-                                <button  class="button btn-continue-shopping">
+                                <button class="button btn-continue-shopping">
                                     Continue Shopping
                                 </button>
                                 </a> 
                                 <a asp-controller="Order" asp-action="CheckOut">
-                                <button  class="button btn-cart-to-checkout">
+                                <button class="button btn-cart-to-checkout">
                                     Checkout
                                 </button>
                                 </a>
