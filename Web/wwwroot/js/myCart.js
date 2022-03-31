@@ -116,3 +116,10 @@ $(".product-remove .remove").on("click", function (e) {
     $("#counter").text(productIds.length)
 
 })
+
+//Checkout look again
+$(".button button-checkout span").on("click", function (e) {
+    if ($("#counter").val === 0) {
+        e.preventDefault()
+    }
+})
